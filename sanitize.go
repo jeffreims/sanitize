@@ -3,6 +3,7 @@ package sanitize
 
 import (
 	"bytes"
+	"fmt"
 	"html"
 	"html/template"
 	"io"
@@ -66,7 +67,7 @@ func HTMLAllowing(s string, args ...[]string) (string, error) {
 
 			if len(ignore) == 0 && includes(allowedTags, token.Data) {
 				token.Attr = cleanAttributes(token.Attr, allowedAttributes)
-				buffer.WriteString(token.String())
+				buffer.WriteString(fmt.Sprint(token.String(), " "))
 			} else if token.Data == ignore {
 				ignore = ""
 			}
@@ -74,7 +75,7 @@ func HTMLAllowing(s string, args ...[]string) (string, error) {
 		case parser.EndTagToken:
 			if len(ignore) == 0 && includes(allowedTags, token.Data) {
 				token.Attr = []parser.Attribute{}
-				buffer.WriteString(token.String())
+				buffer.WriteString(fmt.Sprint(token.String(), " "))
 			} else if token.Data == ignore {
 				ignore = ""
 			}
@@ -82,7 +83,7 @@ func HTMLAllowing(s string, args ...[]string) (string, error) {
 		case parser.TextToken:
 			// We allow text content through, unless ignoring this entire tag and its contents (including other tags)
 			if ignore == "" {
-				buffer.WriteString(token.String())
+				buffer.WriteString(fmt.Sprint(token.String(), " "))
 			}
 		case parser.CommentToken:
 			// We ignore comments by default
